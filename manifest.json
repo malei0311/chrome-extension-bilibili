@@ -1,6 +1,6 @@
 {
   "name": "面向 UP 主的数据下载工具",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "面向 bilibili UP 主的数据下载工具, 用于下载 B 站各种数据",
   "author": "malei0311",
   "permissions": [

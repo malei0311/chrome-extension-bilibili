@@ -31,19 +31,3 @@ function requestTask({ url = '', options = {} } = {}, sendResponse) {
       });
     });
 }
-
-// NOTE: 测试完多 tab 的情况，如果不行，使用如下方式发送消息
-// function sendToContent(url = '', options = {}) {
-//   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-//     log.log(`bg send to content message, tabs`, tabs);
-//     tabs.map((tab) => {
-//       chrome.tabs.sendMessage(tab.id, {
-//         type: MSG_TYPE_BG,
-//         data: {
-//           url,
-//           options
-//         }
-//       })
-//     })
-//   })
-// }

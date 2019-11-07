@@ -4,11 +4,10 @@ import { MSG_TYPE_CONTENT } from '../../utils/config.js';
 
 export async function exportCommentCsv(oid) {
   const start = new Date();
-  const processor = new Processor(oid);
+  let processor = new Processor(oid);
   try {
     await getAllComment(oid, processor);
   } catch (err) {
-    // TODO: 错误提示
     processor = null;
     return;
   }
@@ -27,8 +26,15 @@ function sendRequest(url, options = {}) {
         },
       },
       function(resp) {
+        const lastError = chrome.runtime.lastError;
+        if (lastError) {
+          log.log('can not connect to bg:', lastError.message);
+          reject(lastError);
+          return;
+        }
+
         if (resp.type === 'error') {
-          reject(resp);
+          reject(new Error('retry overflow'));
           return;
         }
         resolve(resp.data);
@@ -83,6 +89,17 @@ async function getAllCommentReply(oid, cid, pn = 1) {
 async function getCommentWithReply(oid, pn) {
   const comments = await getComment(oid, pn);
   const list = comments.replies || [];
+  const page = comments.page || {};
+  // 兼容第一页的制置顶数据
+  if (
+    comments.upper &&
+    comments.upper.top &&
+    page.size > list.length &&
+    page.num === 1
+  ) {
+    list.unshift(comments.upper.top);
+    comments.replies = list;
+  }
   // 补全评论
   await list.reduce((p, comment) => {
     // 没有评论, 或者不用请求
