@@ -22,6 +22,15 @@
       "css": ["content/pages/video/main.css"],
       "js": ["content/pages/video/entry.js"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://member.bilibili.com/*"],
+      "css": [
+        "content/pages/common/common.css",
+        "content/pages/member/main.css"
+      ],
+      "js": ["content/pages/member/entry.js"],
+      "run_at": "document_idle"
     }
   ],
   "page_action": {
