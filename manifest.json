@@ -31,6 +31,15 @@
       ],
       "js": ["content/pages/member/entry.js"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://link.bilibili.com/*"],
+      "css": [
+        "content/pages/common/common.css",
+        "content/pages/link/main.css"
+      ],
+      "js": ["content/pages/link/entry.js"],
+      "run_at": "document_idle"
     }
   ],
   "page_action": {

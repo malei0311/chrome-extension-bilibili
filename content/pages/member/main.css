@@ -17,34 +17,3 @@
   font-size: 12px;
   padding: 0 4px;
 }
-
-.__btn_download_fans__.__running__ {
-  background: #ff85ad;
-  cursor: pointer;
-}
-
-.__btn_download_fans__ .__loading__ {
-  display: none;
-}
-
-.__btn_download_fans__ .__text__ {
-  display: inline-block;
-  vertical-align: middle;
-  line-height: 1.4;
-  font-size: 12px;
-}
-.__btn_download_fans__.__running__ .__loading__ {
-  display: inline-block;
-}
-
-.__btn_download_fans__.__running__ .__text__ {
-  display: none;
-}
-
-.__btn_download_fans__:before {
-  content: '';
-  display: inline-block;
-  width: 0;
-  height: 100%;
-  vertical-align: middle;
-}

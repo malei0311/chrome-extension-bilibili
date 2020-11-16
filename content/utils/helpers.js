@@ -1,4 +1,5 @@
 import log from './log.js';
+import { MSG_TYPE_CONTENT } from './config.js';
 
 export function debounce(fn, time = 500) {
   let timer = null;
@@ -181,4 +182,32 @@ export function retry(fn, maxTimes = 5) {
       });
     }
   };
+}
+
+export function sendRequest(url, options = {}) {
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage(
+      {
+        type: MSG_TYPE_CONTENT,
+        data: {
+          url,
+          options,
+        },
+      },
+      function sendByBgCb(resp) {
+        const lastError = chrome.runtime.lastError;
+        if (lastError) {
+          log.log('can not connect to bg:', lastError.message);
+          reject(lastError);
+          return;
+        }
+
+        if (resp.type === 'error') {
+          reject(new Error('retry overflow'));
+          return;
+        }
+        resolve(resp.data);
+      }
+    );
+  });
 }

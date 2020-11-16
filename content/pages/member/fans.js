@@ -1,12 +1,13 @@
 import log from '../../utils/log.js';
+import { sendRequest } from '../../utils/helpers.js';
 import Processor from './fans_processor.js';
-import { MSG_TYPE_CONTENT } from '../../utils/config.js';
 
 export async function exportCsv(year) {
   const start = new Date();
   let processor = new Processor(year);
   try {
-    await getAll(year, processor);
+    const id = await getId();
+    await getAll(id, year, processor);
   } catch (err) {
     processor = null;
     return;
@@ -15,38 +16,15 @@ export async function exportCsv(year) {
   log.log(`export csv success, cost ${Math.round((Date.now() - start) / 1000)}s`);
 }
 
-function sendRequest(url, options = {}) {
-  return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage(
-      {
-        type: MSG_TYPE_CONTENT,
-        data: {
-          url,
-          options,
-        },
-      },
-      function(resp) {
-        const lastError = chrome.runtime.lastError;
-        if (lastError) {
-          log.log('can not connect to bg:', lastError.message);
-          reject(lastError);
-          return;
-        }
-
-        if (resp.type === 'error') {
-          reject(new Error('retry overflow'));
-          return;
-        }
-        resolve(resp.data);
-      }
-    );
-  });
+async function getId() {
+  const ret = await sendRequest('http://member.bilibili.com/x/web/elec/user');
+  return ret.mid
 }
 
-async function getMonth(month) {
+async function getMonth(id, month) {
   const ret = await sendRequest('http://member.bilibili.com/x/web/data/action', {
     query: {
-      tmid: '364225566',
+      tmid: id,
       month,
     },
   });
@@ -66,14 +44,14 @@ async function getMonth(month) {
   });
 }
 
-async function getAll(year, processor) {
+async function getAll(id, year, processor) {
   await Array(12).fill().reduce((p, c, i) => {
     return p.then(() => {
       const month = `${i + 1}`.padStart(2, '0');
-      return getMonth(`${year}${month}01`).then((list) => {
+      return getMonth(id, `${year}${month}01`).then((list) => {
         return processor.write(list);
       }).catch((err) => {
-        console.log('err', err);
+        log.log('err', err);
       });
     });
   }, Promise.resolve());

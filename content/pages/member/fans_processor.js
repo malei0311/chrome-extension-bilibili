@@ -12,7 +12,7 @@ class Processor {
   }
 
   buildHeader() {
-    const header = "\uFEFFmonth,follow,unfollow\n";
+    const header = "\uFEFFdate,follow,unfollow\n";
     this.csvAll = header;
   }
 
