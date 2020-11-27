@@ -1,7 +1,9 @@
 .__btn_gift_list_download__ {
   float: right;
   height: 32px;
-  width: 52px;
+  min-width: 52px;
   font-size: 0;
   margin-top: 10px;
+  margin-left: 10px;
+  padding: 0 10px;
 }

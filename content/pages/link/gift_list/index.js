@@ -1,6 +1,6 @@
 import { find } from '../../../utils/helpers.js';
 import log from '../../../utils/log.js';
-import { exportCsv } from './exporter.js';
+import { exportCsv, exportMonthCsv } from './exporter.js';
 import { injectMsger, sendToPageWithRet, ACTIONS } from '../../../utils/msg.js';
 
 const Btn = {
@@ -33,22 +33,29 @@ const Btn = {
   },
 };
 
-function injectDownloadBtn(id) {
+function injectDownloadBtn(id, cb, opts) {
+  const _hasInjected = hasInjected(id);
+  if (_hasInjected) {
+    log.log(`id: ${id} has been injected`);
+    return;
+  }
+  log.log(`id: ${id} is injected`);
   return find('.select-bar')
     .then((els) => {
       const el = els[0];
       el.insertAdjacentHTML('beforeend', Btn.gen({
         id,
         klass: id,
+        ...opts,
       }));
     })
     .then(() => {
       find(`#${id}`).then((els) => {
         const el = els[0];
         Btn.onClick(el, () => {
-          return getParams().then(exportCsv).catch((err) => {
-            alert(`出错了：${err.message}`);
-          });
+          if (cb) {
+            return cb();
+          }
         });
       });
     });
@@ -103,12 +110,19 @@ function hasInjected(id) {
 }
 
 export async function inject() {
-  const id = '__btn_gift_list_download__';
-  const _hasInjected = hasInjected(id);
-  if (_hasInjected) {
-    log.log(`id: ${id} has been injected`);
-    return;
-  }
-  log.log(`id: ${id} is injected`);
-  injectDownloadBtn(id);
+  injectDownloadBtn('__btn_gift_list_download__', () => {
+    return getParams().then(exportCsv).catch((err) => {
+      alert(`出错了：${err.message}`);
+    });
+  }, {
+    text: '下载当天',
+  });
+  injectDownloadBtn('__btn_gift_list_download_all__', () => {
+    return getParams().then(exportMonthCsv).catch((err) => {
+      alert(`出错了：${err.message}`);
+    });
+  }, {
+    klass: '__btn_gift_list_download__',
+    text: '下载当月',
+  });
 }
