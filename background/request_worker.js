@@ -28,6 +28,7 @@ function requestTask({ url = '', options = {} } = {}, sendResponse) {
       // NOTE: can not pass Error Object
       sendResponse({
         type: 'error',
+        msg: err.message,
       });
     });
 }

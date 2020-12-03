@@ -93,7 +93,7 @@ export function logSearchParams(params) {
   log.table(Array.from(params));
 }
 
-export function formatDate (date, format) {
+export function formatDate(date, format) {
   const o = {
     'M+': date.getMonth() + 1, // 月份
     'd+': date.getDate(), // 日
@@ -101,21 +101,24 @@ export function formatDate (date, format) {
     'm+': date.getMinutes(), // 分
     's+': date.getSeconds(), // 秒
     'q+': Math.floor((date.getMonth() + 3) / 3), // 季度
-    S: date.getMilliseconds() // 毫秒
-  }
-  let fmt = format || 'yyyy-MM-dd HH:mm:ss'
-  if (/(y+)/.test(fmt)) { 
-    fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length))
+    S: date.getMilliseconds(), // 毫秒
+  };
+  let fmt = format || 'yyyy-MM-dd HH:mm:ss';
+  if (/(y+)/.test(fmt)) {
+    fmt = fmt.replace(
+      RegExp.$1,
+      (date.getFullYear() + '').substr(4 - RegExp.$1.length)
+    );
   }
   for (let k in o) {
     if (new RegExp('(' + k + ')').test(fmt)) {
       fmt = fmt.replace(
         RegExp.$1,
         RegExp.$1.length == 1 ? o[k] : ('00' + o[k]).substr(('' + o[k]).length)
-      )
+      );
     }
   }
-  return fmt
+  return fmt;
 }
 
 export function download(
@@ -140,7 +143,7 @@ export function inject(filepath) {
   const script = document.createElement('script');
   script.setAttribute('type', 'module');
   script.setAttribute('src', chrome.runtime.getURL(filepath));
-  script.onload = function() {
+  script.onload = function () {
     this.remove();
   };
   const head =
@@ -165,14 +168,14 @@ export function retry(fn, maxTimes = 5) {
     } catch (e) {
       log.log(
         `retry fn error, fn: ${fn.name}, times: ${times}, ` +
-          `args=${args}, msg: ${e.message}`
+          `msg: ${e.message}, args: ${args}`
       );
       times += 1;
       if (times >= maxTimes) {
         return Promise.reject(
           new Error(
-            `retry times overflow, ` +
-              `fn: ${fn.name}, times: ${times}, args: ${args}`
+            `retry times overflow, fn: ${fn.name}, times: ${times}, ` +
+              `msg: ${e.message}, args: ${args}`
           )
         );
       }
@@ -203,7 +206,7 @@ export function sendRequest(url, options = {}) {
         }
 
         if (resp.type === 'error') {
-          reject(new Error('retry overflow'));
+          reject(new Error(resp.msg || 'retry overflow'));
           return;
         }
         resolve(resp.data);
